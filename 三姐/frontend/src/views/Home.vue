@@ -120,9 +120,11 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { showToast } from 'vant'
+import { useCartStore } from '@/stores/cart'
 
 const router = useRouter()
 const { t, locale } = useI18n()
+const cartStore = useCartStore()
 
 const showWifi = ref(false)
 const showCustom = ref(false)
@@ -144,6 +146,15 @@ const showWifiInfo = () => {
 
 // 选择服务类型
 const handleServiceSelect = (type) => {
+  // 获取当前服务类型
+  const currentServiceType = localStorage.getItem('serviceType')
+  
+  // 如果切换了服务类型,清空购物车
+  if (currentServiceType && currentServiceType !== type) {
+    cartStore.clearCart()
+    showToast(t('cart.switchServiceTypeClear'))
+  }
+  
   // 保存服务类型到localStorage
   localStorage.setItem('serviceType', type)
   
@@ -164,6 +175,14 @@ const handleServiceSelect = (type) => {
 // 确认桌号
 const onTableConfirm = ({ selectedValues }) => {
   const tableNumber = selectedValues[0]
+  const currentTableNumber = localStorage.getItem('tableNumber')
+  
+  // 如果切换了桌号,清空购物车
+  if (currentTableNumber && currentTableNumber !== tableNumber) {
+    cartStore.clearCart()
+    showToast(t('cart.switchTableClear'))
+  }
+  
   localStorage.setItem('tableNumber', tableNumber)
   showTablePicker.value = false
   router.push('/menu')

@@ -341,8 +341,10 @@ function getImageUrl(imageUrl) {
     return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI0ZGRjhGMCIvPgogIDx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LXNpemU9IjYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+4piVPC90ZXh0Pgo8L3N2Zz4='
   }
   if (imageUrl.startsWith('http')) return imageUrl
-  const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
-  return `${baseUrl}${imageUrl}`
+  // 使用环境变量构建完整URL
+  const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
+  const path = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`
+  return `${apiUrl}${path}`
 }
 </script>
 
