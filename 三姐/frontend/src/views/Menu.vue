@@ -448,8 +448,10 @@ function getImageUrl(imageUrl) {
   }
   // 确保路径以/开头
   const path = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`
+  // 使用环境变量或本地开发地址
+  const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
   // 添加时间戳防止缓存
-  const url = `http://localhost:3000${path}?t=${Date.now()}`
+  const url = `${baseUrl}${path}?t=${Date.now()}`
   return url
 }
 </script>
