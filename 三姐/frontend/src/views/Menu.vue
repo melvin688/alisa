@@ -293,9 +293,10 @@ function onCategoryChange() {
 // 确认桌号
 function onTableConfirm({ selectedValues }) {
   const newTableNumber = selectedValues[0]
+  const oldTableNumber = tableNumber.value
   
   // 如果桌号改变且购物车有商品,提示并清空购物车
-  if (tableNumber.value && newTableNumber !== tableNumber.value && cartStore.itemCount > 0) {
+  if (oldTableNumber && newTableNumber !== oldTableNumber && cartStore.itemCount > 0) {
     showConfirmDialog({
       title: t('common.confirm'),
       message: t('cart.changeTableWarning'),
@@ -308,22 +309,21 @@ function onTableConfirm({ selectedValues }) {
       cartStore.setTableNumber(newTableNumber)
       localStorage.setItem('tableNumber', newTableNumber)
       showTablePicker.value = false
-      showToast(t('cart.tableChanged'))
+      showToast(t('cart.switchTableClear'))
     }).catch(() => {
       // 用户取消,保持当前桌号
       showTablePicker.value = false
     })
-  } else {
-    // 桌号未变或购物车为空,直接切换
+  } else if (newTableNumber !== oldTableNumber) {
+    // 桌号改变但购物车为空,直接切换
     tableNumber.value = newTableNumber
     cartStore.setTableNumber(newTableNumber)
     localStorage.setItem('tableNumber', newTableNumber)
     showTablePicker.value = false
-    
-    // 如果是首次选择桌号,显示提示
-    if (!tableNumber.value) {
-      showToast(`${t('cart.tableNumber')}: ${newTableNumber}`)
-    }
+    showToast(`${t('cart.tableNumber')}: ${newTableNumber}`)
+  } else {
+    // 桌号未变,关闭选择器
+    showTablePicker.value = false
   }
 }
 

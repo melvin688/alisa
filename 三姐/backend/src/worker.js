@@ -100,9 +100,19 @@ export default {
         return await handleAdminLogin(request, env);
       }
       
+      // 管理端个人信息
+      if (path === '/api/admin/profile' && request.method === 'GET') {
+        return await handleAdminProfile(request, env);
+      }
+      
       // 管理端订单API
       if (path === '/api/orders/admin/list' && request.method === 'GET') {
         return await handleAdminGetOrders(request, env);
+      }
+      
+      // 外卖订单列表
+      if (path === '/api/orders/admin/delivery' && request.method === 'GET') {
+        return await handleAdminGetDeliveryOrders(request, env);
       }
       
       if (path.match(/^\/api\/orders\/admin\/table\/\d+$/) && request.method === 'GET') {
@@ -495,6 +505,40 @@ async function handleAdminLogin(request, env) {
   });
 }
 
+// 管理员个人信息
+async function handleAdminProfile(request, env) {
+  // 从请求头获取 token (简化版,实际应该验证 token)
+  const token = request.headers.get('Authorization')?.replace('Bearer ', '');
+  
+  if (!token) {
+    return jsonResponse({ success: false, message: '未授权' }, 401);
+  }
+  
+  // 从 token 中提取用户 ID (简化版)
+  const tokenParts = token.split('_');
+  const adminId = tokenParts[1];
+  
+  if (!adminId) {
+    return jsonResponse({ success: false, message: 'Token 无效' }, 401);
+  }
+  
+  // 查询管理员信息
+  const admin = await env.DB.prepare(`
+    SELECT id, username, role, created_at 
+    FROM admins 
+    WHERE id = ?
+  `).bind(adminId).first();
+  
+  if (!admin) {
+    return jsonResponse({ success: false, message: '用户不存在' }, 404);
+  }
+  
+  return jsonResponse({
+    success: true,
+    data: admin
+  });
+}
+
 // bcrypt 密码验证函数
 async function verifyPassword(password, hash) {
   // bcrypt 哈希格式: $2b$rounds$salt+hash
@@ -534,6 +578,38 @@ async function handleAdminGetOrders(request, env) {
   
   let query = 'SELECT * FROM orders WHERE 1=1';
   const params = [];
+  
+  if (status && status !== 'all') {
+    query += ' AND status = ?';
+    params.push(status);
+  }
+  
+  if (startDate) {
+    query += ' AND DATE(created_at) >= ?';
+    params.push(startDate);
+  }
+  
+  if (endDate) {
+    query += ' AND DATE(created_at) <= ?';
+    params.push(endDate);
+  }
+  
+  query += ' ORDER BY created_at DESC LIMIT 100';
+  
+  const { results } = await env.DB.prepare(query).bind(...params).all();
+  
+  return jsonResponse({ success: true, data: results });
+}
+
+// 管理端 - 获取外卖订单列表
+async function handleAdminGetDeliveryOrders(request, env) {
+  const url = new URL(request.url);
+  const status = url.searchParams.get('status');
+  const startDate = url.searchParams.get('start_date');
+  const endDate = url.searchParams.get('end_date');
+  
+  let query = 'SELECT * FROM orders WHERE service_type = ?';
+  const params = ['delivery'];
   
   if (status && status !== 'all') {
     query += ' AND status = ?';
