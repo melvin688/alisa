@@ -288,14 +288,32 @@ async function submitOrder() {
       remark: remark.value,
       language: locale.value,
       deviceId: deviceId,
-      items: cartStore.items.map(item => ({
-        product_id: item.id,
-        quantity: item.quantity,
-        options: item.selectedOptions ? Object.fromEntries(
-          Object.entries(item.selectedOptions).map(([type, option]) => [type, option.id])
-        ) : {}
-      }))
+      total_amount: cartStore.totalAmount, // 添加总金额
+      items: cartStore.items.map(item => {
+        // 计算商品价格(包含选项加价)
+        let itemPrice = parseFloat(item.price)
+        if (item.selectedOptions) {
+          Object.values(item.selectedOptions).forEach(option => {
+            if (option && option.extra_price) {
+              itemPrice += parseFloat(option.extra_price)
+            }
+          })
+        }
+        
+        return {
+          product_id: item.id,
+          product_name: item.name_zh || item.name,
+          quantity: item.quantity,
+          price: itemPrice,
+          subtotal: itemPrice * item.quantity,
+          temperature: item.selectedOptions?.temperature?.name_zh,
+          sweetness: item.selectedOptions?.sweetness?.name_zh,
+          size: item.selectedOptions?.size?.name_zh
+        }
+      })
     }
+
+    console.log('提交订单数据:', orderData)
 
     const res = await createOrder(orderData)
 

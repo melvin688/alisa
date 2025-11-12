@@ -450,9 +450,8 @@ function getImageUrl(imageUrl) {
   const path = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`
   // 使用环境变量构建完整URL
   const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
-  // 构建完整的图片URL (不要添加 /api 前缀,因为图片路径已经是 /uploads/xxx)
-  const url = `${apiUrl}${path}?t=${Date.now()}`
-  console.log('Image URL:', url)
+  // 构建完整的图片URL (不添加时间戳,让浏览器缓存)
+  const url = `${apiUrl}${path}`
   return url
 }
 </script>

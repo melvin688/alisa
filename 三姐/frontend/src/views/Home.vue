@@ -184,6 +184,7 @@ const onTableConfirm = ({ selectedValues }) => {
   }
   
   localStorage.setItem('tableNumber', tableNumber)
+  cartStore.setTableNumber(tableNumber) // 同步到购物车store
   showTablePicker.value = false
   router.push('/menu')
 }
