@@ -1,0 +1,243 @@
+/* 全局样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Calibri, Arial, "Segoe UI", sans-serif;
+    font-weight: 600; /* 默认所有文本中等粗体 */
+}
+
+@font-face {
+    font-family: 'HelveticaNeue';
+    src: local('Helvetica Neue Bold'), local('HelveticaNeue-Bold');
+    font-weight: 700;
+}
+
+html {
+    overflow-x: hidden; /* 防止水平滚动 */
+}
+
+body {
+    background-color: #f0f2f7;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    max-width: 100%;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0;
+    font-size: 14px; /* 减小默认字体大小以适应手机屏幕 */
+    position: relative; /* 改为相对定位，允许页面正常滚动 */
+    overflow-y: auto; /* 允许垂直滚动 */
+}
+
+
+
+/* 移除了导航栏相关样式 */
+
+.container {
+    width: 100%;
+    background-color: transparent;
+    margin: 0 auto;
+    padding-bottom: 10px; /* 减少底部填充 */
+    max-width: 100%; /* 使容器占满整个宽度 */
+}
+
+/* 移除了证书头部相关样式 */
+
+/* Logo 部分 */
+.logo-container {
+    background-color: white;
+    text-align: center;
+    padding: 15px 0 10px; /* 减少上下padding */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 确保内容居中 */
+    justify-content: center;
+}
+
+.logo {
+    width: 160px; /* 设置固定宽度 */
+    max-width: 200px; /* 增加最大宽度 */
+    height: auto;
+    margin-bottom: 3px;
+    display: block; /* 确保可以居中 */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.ownership-text {
+    font-size: 8px; /* 增加字体大小 */
+    color: #000; /* 保持黑色 */
+    margin-top: 3px;
+    line-height: 1.1;
+    font-weight: 600; /* 调整粗体 */
+    width: 160px; /* 与LOGO宽度一致 */
+    max-width: 200px; /* 设置最大宽度 */
+    margin: 0 auto; /* 居中 */
+}
+
+/* 标题部分 */
+.title-section {
+    background-color: #f0f2f7;
+    padding: 16px 0 14px; /* 增加上下填充 */
+    text-align: center;
+}
+
+.title-section h1 {
+    font-size: 24px; /* 增加字体大小 */
+    color: #000; /* 保持纯黑色 */
+    font-weight: 700; /* 保持字体粗细 */
+    letter-spacing: -0.2px;
+    width: 95%; /* 与证书详情保持一致的宽度 */
+    margin: 0 auto; /* 居中显示 */
+    margin-bottom: 2px; /* 添加下边距 */
+    max-width: 1200px; /* 增加最大宽度，但保持很大的值以便在大多数设备上占满屏幕 */
+}
+
+.subtitle {
+    font-size: 12px;
+    color: #999;
+    font-weight: 400;
+    width: 91%; /* 与其他内容保持一致宽度 */
+    margin: 0 auto; /* 居中显示 */
+    text-align: center;
+}
+
+/* 验证标志 */
+.verification-badge {
+    background-color: #e3f7e6;
+    padding: 10px 15px; /* 增加padding */
+    display: flex;
+    align-items: center;
+    margin: 6px auto; /* 居中显示 */
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(92, 148, 97, 0.1); /* 保持轻微阴影效果 */
+    width: 95%; /* 增加宽度比例 */
+    max-width: 1200px; /* 增加最大宽度，但保持很大的值以便在大多数设备上占满屏幕 */
+}
+
+.check-icon {
+    background-color: #5c9461;
+    color: white;
+    width: 28px; /* 增大图标大小 */
+    height: 28px; /* 增大图标大小 */
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px; /* 增大字体 */
+    margin-right: 15px; /* 增加右边距 */
+    font-weight: 400; /* 保持字体粗细 */
+    line-height: 1;
+    transform: scale(1.2, 1); /* 保持勾号样式 */
+}
+
+.badge-text {
+    color: #5c9461;
+    font-size: 18px; /* 增加字体大小 */
+    font-weight: 700; /* 调整粗细 */
+    letter-spacing: 0.2px;
+}
+
+/* 证书详情 */
+.certificate-details {
+    padding: 0;
+    background-color: white;
+    border-radius: 10px;
+    margin: 6px auto; /* 居中显示 */
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    width: 95%; /* 增加宽度比例 */
+    max-width: 1200px; /* 增加最大宽度，但保持很大的值以便在大多数设备上占满屏幕 */
+    position: relative; /* 添加相对定位，为下划线做准备 */
+}
+
+.detail-row {
+    padding: 18px 20px; /* 增加padding以拉长高度和宽度 */
+    position: relative;
+    border-bottom: 1px solid #eaeaea; /* 使用更浅的边框颜色 */
+}
+
+/* 增强分隔线样式 */
+.detail-row::after {
+    content: '';
+    position: absolute;
+    left: 0; /* 边缘到边缘 */
+    right: 0; /* 边缘到边缘 */
+    bottom: 0;
+    height: 1px;
+    background-color: #eaeaea; /* 更浅的灰色，与参考图匹配 */
+    box-shadow: none; /* 移除阴影 */
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-row:last-child::after {
+    display: none; /* 最后一行不显示分隔线 */
+}
+
+/* 特定为最后一行添加下划线样式 */
+.last-row .university-underline {
+    display: block;
+}
+
+.detail-label {
+    font-size: 16px; /* 增加字体大小 */
+    color: #000; /* 保持纯黑色 */
+    font-weight: 800; /* 进一步增加字体粗细，使标签更黑 */
+    margin-bottom: 8px; /* 增加与值之间的间距 */
+    letter-spacing: -0.3px; /* 进一步减少字母间距，使文字看起来更紧凑和浓重 */
+    font-family: Arial, Helvetica, sans-serif; /* 使用更黑的字体 */
+    text-rendering: optimizeLegibility; /* 改善文本渲染 */
+    -webkit-font-smoothing: antialiased; /* 在WebKit浏览器中改善文本渲染 */
+}
+
+.detail-value {
+    font-size: 18px; /* 增加字体大小 */
+    color: #333; /* 调整为更淡的颜色 */
+    line-height: 1.5; /* 增加行高 */
+    font-weight: normal; /* 取消粗体，使用普通字重 */
+    padding-bottom: 3px; /* 保持底部填充 */
+    letter-spacing: 0px; /* 调整字母间距，使其更加紧凑 */
+}
+
+/* 大学名称下方的下划线 */
+/* 大学名称下方的下划线 */
+.university-text {
+    display: block;
+    position: relative;
+    color: #333; /* 调整为更淡的颜色 */
+    font-weight: normal; /* 取消粗体，使用普通字重 */
+    letter-spacing: 0px; /* 调整字母间距，与其他值保持一致 */
+}
+
+/* 添加线条在文本下方 */
+.university-text::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -6px; /* 略微调整与文本的距离 */
+    width: 100%;
+    height: 1px;
+    background-color: #eaeaea; /* 与其他分隔线保持一致的颜色 */
+}
+
+/* 灰线 */
+.gray-line {
+    height: 1px;
+    background-color: #eaeaea; /* 调整灰线颜色与其他分隔线保持一致 */
+    width: 95%;
+    max-width: 1200px; /* 增加最大宽度，但保持很大的值以便在大多数设备上占满屏幕 */
+    margin: 0 auto;
+    margin-bottom: 20px;
+}
+
+/* Information Technology 文本的样式 */
+.lighter-text {
+    font-weight: normal; /* 取消粗体，使用普通字重 */
+    color: #333; /* 调整为更淡的颜色 */
+    letter-spacing: 0px; /* 调整字母间距，与其他值保持一致 */
+}

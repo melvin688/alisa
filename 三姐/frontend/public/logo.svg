@@ -1,0 +1,21 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <circle cx="100" cy="100" r="100" fill="#FFF8F0"/>
+  
+  <!-- 简约山形logo -->
+  <g transform="translate(100, 100)">
+    <!-- 左侧山峰 -->
+    <path d="M -40,20 L -20,-30 L 0,20 Z" fill="#8D6E63" opacity="0.8"/>
+    
+    <!-- 右侧山峰 -->
+    <path d="M -10,20 L 10,-40 L 30,20 Z" fill="#6B4423"/>
+    
+    <!-- 太阳 -->
+    <circle cx="35" cy="-25" r="8" fill="#FFA726"/>
+  </g>
+  
+  <!-- 文字 -->
+  <text x="100" y="150" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#6B4423">
+    Alisa Cake
+  </text>
+</svg>

@@ -1,0 +1,353 @@
+/* 移动端全局样式优化 */
+
+/* 重置默认样式 */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #f7f8fa;
+}
+
+/* 优化触摸滚动 */
+#app {
+  -webkit-overflow-scrolling: touch;
+  overflow-x: hidden;
+}
+
+/* 优化输入框在 iOS 上的体验 */
+input,
+textarea {
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0;
+}
+
+/* 优化按钮在移动端的点击效果 */
+button {
+  -webkit-appearance: none;
+  appearance: none;
+  border: none;
+  outline: none;
+}
+
+/* Vant 组件全局优化 - 咖啡主题 */
+.van-nav-bar {
+  background: linear-gradient(135deg, #6B4423 0%, #3E2723 100%);
+  box-shadow: 0 2px 8px rgba(107, 68, 35, 0.15);
+}
+
+.van-nav-bar__title {
+  color: white !important;
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: 0.5px;
+}
+
+.van-nav-bar .van-icon {
+  color: white !important;
+  font-size: 20px;
+}
+
+/* 优化弹出层在移动端的显示 */
+.van-popup {
+  max-height: 85vh;
+  border-radius: 16px 16px 0 0;
+}
+
+.van-popup--bottom {
+  border-radius: 16px 16px 0 0;
+}
+
+/* 优化picker在移动端的显示 */
+.van-picker {
+  border-radius: 16px 16px 0 0;
+}
+
+.van-picker__toolbar {
+  height: 48px;
+}
+
+.van-picker__confirm,
+.van-picker__cancel {
+  font-size: 16px;
+  padding: 0 20px;
+}
+
+/* 优化弹窗在移动端的显示 */
+.van-dialog {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.van-dialog__header {
+  padding-top: 24px;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.van-dialog__message {
+  padding: 20px 24px;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.van-dialog__footer {
+  padding: 12px 0;
+}
+
+.van-dialog__button {
+  height: 48px;
+  font-size: 16px;
+}
+
+/* 优化Toast提示 */
+.van-toast {
+  padding: 12px 20px;
+  font-size: 15px;
+  border-radius: 12px;
+  min-width: 120px;
+}
+
+/* 优化TabBar在移动端的显示 */
+.van-tabbar {
+  height: 56px;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.van-tabbar-item__icon {
+  font-size: 22px;
+}
+
+.van-tabbar-item__text {
+  font-size: 12px;
+}
+
+/* 优化Field输入框 */
+.van-field__control {
+  font-size: 15px;
+}
+
+.van-field__label {
+  font-size: 14px;
+}
+
+/* 优化Cell单元格 */
+.van-cell__title {
+  font-size: 14px;
+}
+
+.van-cell__value {
+  font-size: 14px;
+}
+
+/* 优化Button按钮触摸反馈 - 咖啡主题 */
+.van-button--primary {
+  background: linear-gradient(135deg, #8D6E63 0%, #6B4423 100%);
+  border: none;
+  box-shadow: 0 4px 12px rgba(107, 68, 35, 0.25);
+  transition: all 0.3s ease;
+}
+
+.van-button--primary:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 6px rgba(107, 68, 35, 0.25);
+}
+
+.van-button--default:active {
+  background-color: #f2f3f5;
+}
+
+/* 优化Badge徽标 */
+.van-badge {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* 优化Steps步骤条 */
+.van-steps--horizontal {
+  padding: 12px 10px;
+}
+
+/* 响应式字体大小 */
+@media (max-width: 375px) {
+  html {
+    font-size: 15px;
+  }
+  
+  .van-nav-bar__title {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 414px) {
+  html {
+    font-size: 17px;
+  }
+}
+
+/* 安全区域适配 (iPhone X及以上) */
+@supports (bottom: env(safe-area-inset-bottom)) {
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .cart-bar,
+  .cart-footer {
+    padding-bottom: calc(16px + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+/* 🎨 全局动画效果 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 骨架屏动画 */
+@keyframes shimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+.skeleton {
+  animation: shimmer 1.2s ease-in-out infinite;
+  background: linear-gradient(
+    to right,
+    #f0f0f0 8%,
+    #e0e0e0 18%,
+    #f0f0f0 33%
+  );
+  background-size: 800px 104px;
+}
+
+/* 🎯 全局悬浮效果 */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+/* 🌟 渐变文字效果 */
+.gradient-text {
+  background: linear-gradient(135deg, #D84315 0%, #6B4423 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 横屏提示 */
+@media (orientation: landscape) and (max-height: 500px) {
+  .van-nav-bar {
+    height: 40px;
+  }
+  
+  .van-nav-bar__title {
+    font-size: 15px;
+  }
+}
+
+/* 优化加载动画 */
+.van-loading {
+  font-size: 24px;
+}
+
+.van-loading__text {
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+/* 优化空状态 */
+.van-empty__image {
+  margin-bottom: 16px;
+}
+
+.van-empty__description {
+  color: #969799;
+  line-height: 1.6;
+}
+
+/* 优化图片加载效果 */
+.van-image__loading,
+.van-image__error {
+  background: #f7f8fa;
+}
+
+/* 优化侧滑手势 */
+.van-swipe-cell__left,
+.van-swipe-cell__right {
+  display: flex;
+  align-items: center;
+}
