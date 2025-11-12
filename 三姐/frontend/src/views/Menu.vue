@@ -9,13 +9,14 @@
       </template>
     </van-nav-bar>
 
-    <!-- 桌号选择 -->
-    <div class="table-selector">
+    <!-- 桌号选择 (仅在店堂食时显示) -->
+    <div v-if="serviceType === 'dine-in'" class="table-selector">
       <van-field
         v-model="tableNumber"
         :label="$t('cart.tableNumber')"
         placeholder="A01"
         readonly
+        clickable
         @click="showTablePicker = true"
       />
     </div>
@@ -175,6 +176,7 @@ const langOptions = [
 const tableNumber = ref(cartStore.tableNumber || '')
 const showTablePicker = ref(false)
 const tableColumns = ref([])
+const serviceType = ref(localStorage.getItem('serviceType') || 'dine-in')
 
 const categories = ref([])
 const products = ref([])
@@ -292,7 +294,7 @@ function onCategoryChange() {
 function onTableConfirm({ selectedValues }) {
   const newTableNumber = selectedValues[0]
   
-  // 如果桌号改变,提示并清空购物车
+  // 如果桌号改变且购物车有商品,提示并清空购物车
   if (tableNumber.value && newTableNumber !== tableNumber.value && cartStore.itemCount > 0) {
     showConfirmDialog({
       title: t('common.confirm'),
@@ -300,19 +302,28 @@ function onTableConfirm({ selectedValues }) {
       confirmButtonText: t('common.confirm'),
       cancelButtonText: t('common.cancel')
     }).then(() => {
-      // 清空购物车
+      // 确认切换,清空购物车
       cartStore.clearCart()
       tableNumber.value = newTableNumber
       cartStore.setTableNumber(newTableNumber)
+      localStorage.setItem('tableNumber', newTableNumber)
       showTablePicker.value = false
       showToast(t('cart.tableChanged'))
     }).catch(() => {
-      // 用户取消,不切换桌号
+      // 用户取消,保持当前桌号
+      showTablePicker.value = false
     })
   } else {
+    // 桌号未变或购物车为空,直接切换
     tableNumber.value = newTableNumber
     cartStore.setTableNumber(newTableNumber)
+    localStorage.setItem('tableNumber', newTableNumber)
     showTablePicker.value = false
+    
+    // 如果是首次选择桌号,显示提示
+    if (!tableNumber.value) {
+      showToast(`${t('cart.tableNumber')}: ${newTableNumber}`)
+    }
   }
 }
 
