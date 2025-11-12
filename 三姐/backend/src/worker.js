@@ -115,6 +115,11 @@ export default {
         return await handleAdminGetDeliveryOrders(request, env);
       }
       
+      // 自取订单列表
+      if (path === '/api/orders/admin/takeaway' && request.method === 'GET') {
+        return await handleAdminGetTakeawayOrders(request, env);
+      }
+      
       if (path.match(/^\/api\/orders\/admin\/table\/\d+$/) && request.method === 'GET') {
         return await handleAdminGetTableOrders(request, env, path);
       }
@@ -610,6 +615,38 @@ async function handleAdminGetDeliveryOrders(request, env) {
   
   let query = 'SELECT * FROM orders WHERE service_type = ?';
   const params = ['delivery'];
+  
+  if (status && status !== 'all') {
+    query += ' AND status = ?';
+    params.push(status);
+  }
+  
+  if (startDate) {
+    query += ' AND DATE(created_at) >= ?';
+    params.push(startDate);
+  }
+  
+  if (endDate) {
+    query += ' AND DATE(created_at) <= ?';
+    params.push(endDate);
+  }
+  
+  query += ' ORDER BY created_at DESC LIMIT 100';
+  
+  const { results } = await env.DB.prepare(query).bind(...params).all();
+  
+  return jsonResponse({ success: true, data: results });
+}
+
+// 管理端 - 获取自取订单列表
+async function handleAdminGetTakeawayOrders(request, env) {
+  const url = new URL(request.url);
+  const status = url.searchParams.get('status');
+  const startDate = url.searchParams.get('start_date');
+  const endDate = url.searchParams.get('end_date');
+  
+  let query = 'SELECT * FROM orders WHERE service_type = ?';
+  const params = ['takeaway'];
   
   if (status && status !== 'all') {
     query += ' AND status = ?';

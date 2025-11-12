@@ -3,6 +3,7 @@
     <!-- 顶部导航 -->
     <van-nav-bar title="Alisa Cake" fixed left-arrow @click-left="goHome">
       <template #right>
+        <van-icon name="wap-home" size="20" @click="goHome" style="margin-right: 12px; color: #6B4423;" />
         <van-dropdown-menu>
           <van-dropdown-item v-model="currentLang" :options="langOptions" @change="changeLang" />
         </van-dropdown-menu>
@@ -22,7 +23,7 @@
     </div>
 
     <!-- 分类标签 -->
-    <van-tabs v-model:active="activeCategory" @change="onCategoryChange" sticky offset-top="46px">
+    <van-tabs v-model:active="activeCategory" @change="onCategoryChange" sticky :offset-top="serviceType === 'dine-in' ? 106 : 46">
       <van-tab v-for="category in categories" :key="category.id" :title="getCategoryName(category)">
         <!-- 商品列表 -->
         <div class="product-list">
