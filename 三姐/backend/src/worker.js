@@ -132,6 +132,11 @@ export default {
         return await handleAdminDeleteOrder(request, env, path);
       }
       
+      // 打印订单
+      if (path.match(/^\/api\/orders\/admin\/print\/\d+$/) && request.method === 'POST') {
+        return await handleAdminPrintOrder(request, env, path);
+      }
+      
       // 管理端商品API
       if (path === '/api/products/admin/list' && request.method === 'GET') {
         return await handleAdminGetProducts(request, env);
@@ -272,7 +277,7 @@ async function handleGetCategories(request, env) {
 async function handleGetTables(request, env) {
   const { results } = await env.DB.prepare(`
     SELECT * FROM tables 
-    WHERE is_active = 1 
+    WHERE status = 'available' 
     ORDER BY table_number
   `).all();
   
@@ -706,6 +711,39 @@ async function handleAdminDeleteOrder(request, env, path) {
   await env.DB.prepare(`DELETE FROM orders WHERE id = ?`).bind(orderId).run();
   
   return jsonResponse({ success: true, message: '订单删除成功' });
+}
+
+// 管理端 - 打印订单
+async function handleAdminPrintOrder(request, env, path) {
+  const orderId = path.split('/').pop();
+  
+  // 获取订单信息
+  const order = await env.DB.prepare(`
+    SELECT * FROM orders WHERE id = ?
+  `).bind(orderId).first();
+  
+  if (!order) {
+    return jsonResponse({ success: false, message: '订单不存在' }, 404);
+  }
+  
+  // 获取订单项
+  const { results: items } = await env.DB.prepare(`
+    SELECT * FROM order_items WHERE order_id = ?
+  `).bind(orderId).all();
+  
+  // 更新订单为已打印
+  await env.DB.prepare(`
+    UPDATE orders SET is_printed = 1 WHERE id = ?
+  `).bind(orderId).run();
+  
+  return jsonResponse({ 
+    success: true, 
+    message: '订单已标记为已打印',
+    data: {
+      order,
+      items
+    }
+  });
 }
 
 // 管理端 - 获取商品列表
