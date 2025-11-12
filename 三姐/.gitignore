@@ -5,3 +5,17 @@ dist
 *.log
 .vscode
 .idea
+
+# Wrangler本地开发缓存
+.wrangler
+backend/.wrangler
+.vite
+
+# 测试文件
+test-*.html
+test-*.png
+test-*.jpg
+
+# 临时文件
+*.tmp
+*.temp
