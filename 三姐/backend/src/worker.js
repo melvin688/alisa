@@ -417,26 +417,51 @@ async function handleGetPaymentStatus(request, env, path) {
 
 // ========== 图片服务 ==========
 async function handleGetImage(request, env, path) {
-  // 从路径中提取文件名并解码 URL 编码
-  const encodedFilename = path.replace('/uploads/', '');
-  const filename = decodeURIComponent(encodedFilename);
-  
-  console.log('Requesting image:', filename);
-  
-  const object = await env.IMAGES.get(filename);
-  
-  if (!object) {
-    console.log('Image not found in R2:', filename);
-    return new Response('Image not found', { status: 404 });
+  try {
+    // 从路径中提取文件名并解码 URL 编码
+    const encodedFilename = path.replace('/uploads/', '');
+    const filename = decodeURIComponent(encodedFilename);
+    
+    console.log('=== Image Request Debug ===');
+    console.log('Original path:', path);
+    console.log('Encoded filename:', encodedFilename);
+    console.log('Decoded filename:', filename);
+    console.log('R2 binding available:', !!env.IMAGES);
+    
+    if (!env.IMAGES) {
+      return new Response('R2 binding not configured', { status: 500 });
+    }
+    
+    const object = await env.IMAGES.get(filename);
+    
+    console.log('R2 object found:', !!object);
+    
+    if (!object) {
+      // 尝试列出可用的文件(调试用)
+      console.log('Image not found in R2:', filename);
+      return jsonResponse({ 
+        success: false, 
+        message: 'Image not found',
+        requested: filename,
+        path: path
+      }, 404);
+    }
+    
+    const headers = new Headers();
+    object.writeHttpMetadata(headers);
+    headers.set('etag', object.httpEtag);
+    headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+    headers.set('Access-Control-Allow-Origin', '*');
+    
+    return new Response(object.body, { headers });
+  } catch (error) {
+    console.error('Error in handleGetImage:', error);
+    return jsonResponse({ 
+      success: false, 
+      message: error.message,
+      stack: error.stack 
+    }, 500);
   }
-  
-  const headers = new Headers();
-  object.writeHttpMetadata(headers);
-  headers.set('etag', object.httpEtag);
-  headers.set('Cache-Control', 'public, max-age=31536000, immutable');
-  headers.set(...corsHeaders);
-  
-  return new Response(object.body, { headers });
 }
 
 // ========== 管理端 ==========
