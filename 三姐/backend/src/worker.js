@@ -354,11 +354,16 @@ async function handleGetPaymentStatus(request, env, path) {
 
 // ========== 图片服务 ==========
 async function handleGetImage(request, env, path) {
-  const filename = path.replace('/uploads/', '');
+  // 从路径中提取文件名并解码 URL 编码
+  const encodedFilename = path.replace('/uploads/', '');
+  const filename = decodeURIComponent(encodedFilename);
+  
+  console.log('Requesting image:', filename);
   
   const object = await env.IMAGES.get(filename);
   
   if (!object) {
+    console.log('Image not found in R2:', filename);
     return new Response('Image not found', { status: 404 });
   }
   
@@ -366,6 +371,7 @@ async function handleGetImage(request, env, path) {
   object.writeHttpMetadata(headers);
   headers.set('etag', object.httpEtag);
   headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+  headers.set(...corsHeaders);
   
   return new Response(object.body, { headers });
 }
