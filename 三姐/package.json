@@ -1,0 +1,23 @@
+{
+  "name": "alisa-cake-ordering-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Alisa Cake Coffee Ordering System",
+  "scripts": {
+    "install:frontend": "cd frontend && npm install",
+    "install:admin": "cd admin && npm install",
+    "install:backend": "cd backend && npm install",
+    "build:frontend": "cd frontend && npm install && npm run build",
+    "build:admin": "cd admin && npm install && npm run build",
+    "start:frontend": "cd frontend && npm run dev",
+    "start:admin": "cd admin && npm run dev",
+    "start:backend": "cd backend && node server.js",
+    "start:all": "concurrently \"npm run start:frontend\" \"npm run start:admin\" \"npm run start:backend\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/melvin688/xiaoan.github.io.git"
+  },
+  "author": "melvin688",
+  "license": "MIT"
+}
