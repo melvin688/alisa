@@ -212,37 +212,41 @@ async function handleCreateOrder(request, env) {
   const orderResult = await env.DB.prepare(`
     INSERT INTO orders (
       order_no, table_number, service_type, 
-      total_amount, status, payment_method, notes,
-      created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+      total_amount, status, payment_method, remark,
+      created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
   `).bind(
     orderNo,
     data.table_number,
-    data.service_type || 'dine_in',
+    data.service_type || 'dine-in',
     data.total_amount,
     'pending',
     data.payment_method || 'cash',
-    data.notes || ''
+    data.remark || data.notes || ''
   ).run();
   
   const orderId = orderResult.meta.last_row_id;
   
   // 插入订单项
   for (const item of data.items) {
+    // 构建 options JSON
+    const options = {};
+    if (item.temperature) options.temperature = item.temperature;
+    if (item.sweetness) options.sweetness = item.sweetness;
+    if (item.size) options.size = item.size;
+    
     await env.DB.prepare(`
       INSERT INTO order_items (
         order_id, product_id, product_name, quantity, 
-        price, temperature, sweetness, size, subtotal
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        unit_price, options, subtotal
+      ) VALUES (?, ?, ?, ?, ?, ?, ?)
     `).bind(
       orderId,
       item.product_id,
       item.product_name || item.name,
       item.quantity,
       item.price,
-      item.temperature || null,
-      item.sweetness || null,
-      item.size || null,
+      Object.keys(options).length > 0 ? JSON.stringify(options) : null,
       item.subtotal
     ).run();
   }
