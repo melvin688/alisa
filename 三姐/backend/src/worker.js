@@ -100,9 +100,72 @@ export default {
         return await handleAdminLogin(request, env);
       }
       
-      // 管理端订单列表
-      if (path === '/api/admin/orders' && request.method === 'GET') {
+      // 管理端订单API
+      if (path === '/api/orders/admin/list' && request.method === 'GET') {
         return await handleAdminGetOrders(request, env);
+      }
+      
+      if (path.match(/^\/api\/orders\/admin\/table\/\d+$/) && request.method === 'GET') {
+        return await handleAdminGetTableOrders(request, env, path);
+      }
+      
+      if (path.match(/^\/api\/orders\/admin\/status\/\d+$/) && request.method === 'PUT') {
+        return await handleAdminUpdateOrderStatus(request, env, path);
+      }
+      
+      if (path.match(/^\/api\/orders\/admin\/\d+$/) && request.method === 'DELETE') {
+        return await handleAdminDeleteOrder(request, env, path);
+      }
+      
+      // 管理端商品API
+      if (path === '/api/products/admin/list' && request.method === 'GET') {
+        return await handleAdminGetProducts(request, env);
+      }
+      
+      if (path === '/api/products/admin/create' && request.method === 'POST') {
+        return await handleAdminCreateProduct(request, env);
+      }
+      
+      if (path.match(/^\/api\/products\/admin\/update\/\d+$/) && request.method === 'PUT') {
+        return await handleAdminUpdateProduct(request, env, path);
+      }
+      
+      if (path.match(/^\/api\/products\/admin\/delete\/\d+$/) && request.method === 'DELETE') {
+        return await handleAdminDeleteProduct(request, env, path);
+      }
+      
+      // 管理端分类API
+      if (path === '/api/categories/admin/list' && request.method === 'GET') {
+        return await handleAdminGetCategories(request, env);
+      }
+      
+      if (path === '/api/categories/admin/create' && request.method === 'POST') {
+        return await handleAdminCreateCategory(request, env);
+      }
+      
+      if (path.match(/^\/api\/categories\/admin\/update\/\d+$/) && request.method === 'PUT') {
+        return await handleAdminUpdateCategory(request, env, path);
+      }
+      
+      if (path.match(/^\/api\/categories\/admin\/delete\/\d+$/) && request.method === 'DELETE') {
+        return await handleAdminDeleteCategory(request, env, path);
+      }
+      
+      // 管理端桌台API
+      if (path === '/api/tables/admin/list' && request.method === 'GET') {
+        return await handleAdminGetTables(request, env);
+      }
+      
+      if (path === '/api/tables/admin/create' && request.method === 'POST') {
+        return await handleAdminCreateTable(request, env);
+      }
+      
+      if (path.match(/^\/api\/tables\/admin\/update\/\d+$/) && request.method === 'PUT') {
+        return await handleAdminUpdateTable(request, env, path);
+      }
+      
+      if (path.match(/^\/api\/tables\/admin\/delete\/\d+$/) && request.method === 'DELETE') {
+        return await handleAdminDeleteTable(request, env, path);
       }
       
       // 404
@@ -467,4 +530,223 @@ async function handleAdminGetOrders(request, env) {
   const { results } = await env.DB.prepare(query).bind(...params).all();
   
   return jsonResponse({ success: true, data: results });
+}
+
+// 管理端 - 获取特定桌台订单
+async function handleAdminGetTableOrders(request, env, path) {
+  const tableId = path.split('/').pop();
+  
+  const { results } = await env.DB.prepare(`
+    SELECT * FROM orders 
+    WHERE table_id = ? 
+    ORDER BY created_at DESC
+  `).bind(tableId).all();
+  
+  return jsonResponse({ success: true, data: results });
+}
+
+// 管理端 - 更新订单状态
+async function handleAdminUpdateOrderStatus(request, env, path) {
+  const orderId = path.split('/').pop();
+  const { status } = await request.json();
+  
+  await env.DB.prepare(`
+    UPDATE orders SET status = ? WHERE id = ?
+  `).bind(status, orderId).run();
+  
+  return jsonResponse({ success: true, message: '订单状态更新成功' });
+}
+
+// 管理端 - 删除订单
+async function handleAdminDeleteOrder(request, env, path) {
+  const orderId = path.split('/').pop();
+  
+  // 先删除订单项
+  await env.DB.prepare(`DELETE FROM order_items WHERE order_id = ?`).bind(orderId).run();
+  
+  // 再删除订单
+  await env.DB.prepare(`DELETE FROM orders WHERE id = ?`).bind(orderId).run();
+  
+  return jsonResponse({ success: true, message: '订单删除成功' });
+}
+
+// 管理端 - 获取商品列表
+async function handleAdminGetProducts(request, env) {
+  const { results } = await env.DB.prepare(`
+    SELECT p.*, c.name_zh as category_name
+    FROM products p
+    LEFT JOIN categories c ON p.category_id = c.id
+    ORDER BY p.sort_order, p.id
+  `).all();
+  
+  // 解析 options 字段
+  results.forEach(product => {
+    if (product.options) {
+      try {
+        product.options = JSON.parse(product.options);
+      } catch (e) {
+        product.options = { size: [], temperature: [], sweetness: [] };
+      }
+    }
+  });
+  
+  return jsonResponse({ success: true, data: results });
+}
+
+// 管理端 - 创建商品
+async function handleAdminCreateProduct(request, env) {
+  const data = await request.json();
+  
+  const optionsJson = JSON.stringify(data.options || { size: [], temperature: [], sweetness: [] });
+  
+  const result = await env.DB.prepare(`
+    INSERT INTO products (
+      name_zh, name_en, name_my, description_zh, description_en, description_my,
+      category_id, price, image_url, is_available, sort_order, options
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(
+    data.name_zh, data.name_en || '', data.name_my || '',
+    data.description_zh || '', data.description_en || '', data.description_my || '',
+    data.category_id, data.price, data.image_url || '',
+    data.is_available !== undefined ? data.is_available : 1,
+    data.sort_order || 0, optionsJson
+  ).run();
+  
+  return jsonResponse({ success: true, data: { id: result.meta.last_row_id }, message: '商品创建成功' });
+}
+
+// 管理端 - 更新商品
+async function handleAdminUpdateProduct(request, env, path) {
+  const productId = path.split('/').pop();
+  const data = await request.json();
+  
+  const optionsJson = JSON.stringify(data.options || { size: [], temperature: [], sweetness: [] });
+  
+  await env.DB.prepare(`
+    UPDATE products SET
+      name_zh = ?, name_en = ?, name_my = ?,
+      description_zh = ?, description_en = ?, description_my = ?,
+      category_id = ?, price = ?, image_url = ?,
+      is_available = ?, sort_order = ?, options = ?
+    WHERE id = ?
+  `).bind(
+    data.name_zh, data.name_en || '', data.name_my || '',
+    data.description_zh || '', data.description_en || '', data.description_my || '',
+    data.category_id, data.price, data.image_url || '',
+    data.is_available !== undefined ? data.is_available : 1,
+    data.sort_order || 0, optionsJson, productId
+  ).run();
+  
+  return jsonResponse({ success: true, message: '商品更新成功' });
+}
+
+// 管理端 - 删除商品
+async function handleAdminDeleteProduct(request, env, path) {
+  const productId = path.split('/').pop();
+  
+  await env.DB.prepare(`DELETE FROM products WHERE id = ?`).bind(productId).run();
+  
+  return jsonResponse({ success: true, message: '商品删除成功' });
+}
+
+// 管理端 - 获取分类列表
+async function handleAdminGetCategories(request, env) {
+  const { results } = await env.DB.prepare(`
+    SELECT * FROM categories ORDER BY sort_order, id
+  `).all();
+  
+  return jsonResponse({ success: true, data: results });
+}
+
+// 管理端 - 创建分类
+async function handleAdminCreateCategory(request, env) {
+  const data = await request.json();
+  
+  const result = await env.DB.prepare(`
+    INSERT INTO categories (name_zh, name_en, name_my, sort_order, is_active)
+    VALUES (?, ?, ?, ?, ?)
+  `).bind(
+    data.name_zh, data.name_en || '', data.name_my || '',
+    data.sort_order || 0, data.is_active !== undefined ? data.is_active : 1
+  ).run();
+  
+  return jsonResponse({ success: true, data: { id: result.meta.last_row_id }, message: '分类创建成功' });
+}
+
+// 管理端 - 更新分类
+async function handleAdminUpdateCategory(request, env, path) {
+  const categoryId = path.split('/').pop();
+  const data = await request.json();
+  
+  await env.DB.prepare(`
+    UPDATE categories SET
+      name_zh = ?, name_en = ?, name_my = ?,
+      sort_order = ?, is_active = ?
+    WHERE id = ?
+  `).bind(
+    data.name_zh, data.name_en || '', data.name_my || '',
+    data.sort_order || 0, data.is_active !== undefined ? data.is_active : 1,
+    categoryId
+  ).run();
+  
+  return jsonResponse({ success: true, message: '分类更新成功' });
+}
+
+// 管理端 - 删除分类
+async function handleAdminDeleteCategory(request, env, path) {
+  const categoryId = path.split('/').pop();
+  
+  await env.DB.prepare(`DELETE FROM categories WHERE id = ?`).bind(categoryId).run();
+  
+  return jsonResponse({ success: true, message: '分类删除成功' });
+}
+
+// 管理端 - 获取桌台列表
+async function handleAdminGetTables(request, env) {
+  const { results } = await env.DB.prepare(`
+    SELECT * FROM tables ORDER BY table_number
+  `).all();
+  
+  return jsonResponse({ success: true, data: results });
+}
+
+// 管理端 - 创建桌台
+async function handleAdminCreateTable(request, env) {
+  const data = await request.json();
+  
+  const result = await env.DB.prepare(`
+    INSERT INTO tables (table_number, seats, status, qr_code)
+    VALUES (?, ?, ?, ?)
+  `).bind(
+    data.table_number, data.seats || 4, data.status || 'available',
+    data.qr_code || ''
+  ).run();
+  
+  return jsonResponse({ success: true, data: { id: result.meta.last_row_id }, message: '桌台创建成功' });
+}
+
+// 管理端 - 更新桌台
+async function handleAdminUpdateTable(request, env, path) {
+  const tableId = path.split('/').pop();
+  const data = await request.json();
+  
+  await env.DB.prepare(`
+    UPDATE tables SET
+      table_number = ?, seats = ?, status = ?, qr_code = ?
+    WHERE id = ?
+  `).bind(
+    data.table_number, data.seats || 4, data.status || 'available',
+    data.qr_code || '', tableId
+  ).run();
+  
+  return jsonResponse({ success: true, message: '桌台更新成功' });
+}
+
+// 管理端 - 删除桌台
+async function handleAdminDeleteTable(request, env, path) {
+  const tableId = path.split('/').pop();
+  
+  await env.DB.prepare(`DELETE FROM tables WHERE id = ?`).bind(tableId).run();
+  
+  return jsonResponse({ success: true, message: '桌台删除成功' });
 }
