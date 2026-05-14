@@ -1,0 +1,7 @@
+{
+  "name": "coffee coffee",
+  "description": "A high-fidelity, aesthetic coffee roasting e-commerce experience.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
