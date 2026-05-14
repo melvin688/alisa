@@ -1,0 +1,11 @@
+node_modules
+server/node_modules
+dist
+.env
+.env.local
+server/coffee.db
+server/coffee.db-shm
+server/coffee.db-wal
+.wrangler
+.vscode
+.git

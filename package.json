@@ -9,7 +9,9 @@
     "dev:full": "start cmd /c \"cd server && node --watch index.js\" && vite",
     "build": "vite build",
     "preview": "vite preview",
-    "setup": "cd server && npm install"
+    "setup": "cd server && npm install",
+    "postinstall": "cd server && npm install",
+    "start": "node server/index.js"
   },
   "dependencies": {
     "react": "^19.2.4",
